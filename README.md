@@ -1,60 +1,20 @@
 #llxml
-OSX / Linux / DOS  Json conversion of arrays to transposed columns in CSV format. 
+OSX / Linux / DOS  Parse XML
 
-LLJson parses json files and outputs them as a transposed set of CSV columns. 
+### TODO - add notes here
 
   [![Build status](https://travis-ci.org/landenlabs/llxml.svg?branch=master)](https://travis-ci.org/landenlabs/llxml)
-  
-  
+
+
 This input json file:
 
 <pre>
-{
-  "quiz": {
-    "sport": {
-      "q1": {
-        "question": "Which one is correct team name in NBA?",
-        "options": [
-          "New York Bulls",
-          "Los Angeles Kings",
-          "Golden State Warriros",
-          "Huston Rocket"
-        ],
-        "answer": "Huston Rocket"
-      }
-    },
-    "maths": {
-      "q1": {
-        "question": "5 + 7 = ?",
-        "options": [
-          "10",
-          "11",
-          "12",
-          "13"
-        ],
-        "answer": "12"
-      },
-      "q2": {
-        "question": "12 - 8 = ?",
-        "options": [
-          "1",
-          "2",
-          "3",
-          "4"
-        ],
-        "answer": "4"
-      }
-    }
-  }
-}
+
 </pre>
 
 Is converted to CSV columns as:
 <pre>
-quiz.maths.q1.options, quiz.maths.q2.options, quiz.sport.q1.options
-"10", "1", "New York Bulls"
-"11", "2", "Los Angeles Kings"
-"12", "3", "Golden State Warriros"
+
 </pre>
 
 Visit home website
@@ -64,36 +24,34 @@ Visit home website
 
 Help Banner:
 <pre>
-llxml  Dennis Lang v1.1 (landenlabs.com) Dec 20 2019
+llxml  Dennis Lang v1.2 (landenlabs.com) Nov 26 2024
 
-Des: Json parse and output as transposed CSV
+Des: Xml parse and ??
 Use: llxml [options] directories...   or  files
 
- Options (only first unique characters required, options can be repeated):
-   -includefile=&lt;filePattern>
-   -excludefile=&lt;filePattern>
+ Options (only unique characters required, can be repeated, case ignored):
+   -fileInclude=<filePattern>
+   -fileExclude=<filePattern>
+   -pathInclude=<pathPattern>
+   -pathExclude=<pathPattern>
+   -showInput
    -verbose
+   -outFmt=%p-AA/%f
 
  Example:
-   llxml -inc=*.json -ex=foo.json -ex=bar.json dir1/subdir dir2 file1.json file2.json
- Example input json:
-   {
-      "cloudCover": [
-        10,
-        30,
-        49
-      ],
-        "dayOfWeek": [
-        "Monday",
-        "Tuesday",
-        "Wednesday"
-      ]
-   }
+   llxml -inc=\*xml -excludePath=\*value-\*
+   llxml main1.xml dir2/main2.xml , child1.xml child2.xml
 
-   Output transposed CSV
-    cloudCover,  dayOfWeek
-     10, Monday
-     30, Tuesday
-     49, WednesDay
+ Example input xml:
+    <?xml version="1.0" encoding="utf-8"?>
+    <!-- comment-->
+    <resources>
+        <string name="language" translatable="false">English</string>
+        <!-- comment -->
+        <string name="word1">Your Drive</string>
+        <string name="word2">Radar</string>
+    </resources>
 
+   Output:
+    TODO - add notes here
 </pre>
