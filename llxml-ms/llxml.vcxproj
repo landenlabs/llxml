@@ -20,15 +20,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\llxml\directory.cpp" />
+    <ClCompile Include="..\llxml\fileutil.cpp" />
     <ClCompile Include="..\llxml\llxml.cpp" />
+    <ClCompile Include="..\llxml\xml.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\llxml\directory.h" />
-    <ClInclude Include="..\llxml\json.h" />
-    <ClInclude Include="..\llxml\ll_stdhdr.h" />
-    <ClInclude Include="..\llxml\lstring.h" />
-    <ClInclude Include="..\llxml\split.h" />
-    <ClInclude Include="..\llxml\SwapStream.h" />
+    <ClInclude Include="..\llxml\directory.hpp" />
+    <ClInclude Include="..\llxml\fileutil.hpp" />
+    <ClInclude Include="..\llxml\ll_stdhdr.hpp" />
+    <ClInclude Include="..\llxml\lstring.hpp" />
+    <ClInclude Include="..\llxml\split.hpp" />
+    <ClInclude Include="..\llxml\xml.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\llxml\Makefile" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -41,26 +46,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
