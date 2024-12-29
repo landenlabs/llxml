@@ -338,7 +338,7 @@ unsigned int XmlBuffer::getUpdates() const {
     unsigned int updates = 0;
     for (const auto& file : filesData) {
         const FileData& fileData = file.second;
-        updates += fileData.updates.size();
+        updates += (unsigned int)fileData.updates.size();
     }
     return updates;
 }

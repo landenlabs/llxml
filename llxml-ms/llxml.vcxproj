@@ -31,6 +31,10 @@
     <ClInclude Include="..\llxml\lstring.hpp" />
     <ClInclude Include="..\llxml\split.hpp" />
     <ClInclude Include="..\llxml\xml.hpp" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="llxml.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\llxml\Makefile" />
