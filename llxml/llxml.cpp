@@ -59,11 +59,17 @@
 
 // 4291 - No matching operator delete found
 #pragma warning(disable : 4291)
-#define _CRT_SECURE_NO_WARNINGS
 
+// Project files
+#include "ll_stdhdr.hpp"
+#include "directory.hpp"
+#include "split.hpp"
+#include "xml.hpp"
+#include "fileutil.hpp"
+
+#include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
-
 #include <algorithm>
 #include <exception>
 #include <fstream>
@@ -73,13 +79,6 @@
 #include <regex>
 #include <sstream>
 #include <vector>
-
-// Project files
-#include "directory.hpp"
-#include "ll_stdhdr.hpp"
-#include "split.hpp"
-#include "xml.hpp"
-#include "fileutil.hpp"
 
 using namespace std;
 
@@ -107,15 +106,12 @@ static uint patternErrCnt = 0;
 static uint parseErrCnt = 0;
 
 #ifdef WIN32
-    const char SLASH_CHAR('\\');
-    #include <assert.h>
+
     #define strncasecmp _strnicmp
     #if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
         #define S_ISREG(m) (((m)&S_IFMT) == S_IFREG)
     #endif
-#else
-    const char SLASH_CHAR('/');
-    #include <assert.h>
+
 #endif
 
 /*

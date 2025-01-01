@@ -1,5 +1,6 @@
 //-------------------------------------------------------------------------------------------------
-// File: Directory.hpp   Author: Dennis Lang
+// File: Directory.hpp
+// Author: Dennis Lang
 //
 // Desc: This class is used to obtain the names of files in a directory.
 //
@@ -19,15 +20,9 @@
 //              ...
 //          }
 //-------------------------------------------------------------------------------------------------
-//
-// Author: Dennis Lang - 2023
-// https://landenlabs.com
-//
-// This file is part of llxml project.
-//
 // ----- License ----
 //
-// Copyright (c) 2023 Dennis Lang
+// Copyright (c) 2024  Dennis Lang
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -47,9 +42,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
+
 #include "ll_stdhdr.hpp"
+
+
 #ifdef HAVE_WIN
-    #include <windows.h>
+#define byte win_byte_override  // Fix for c++ v17
+#include <windows.h>
+#undef byte                     // Fix for c++ v17
 #else
     typedef unsigned int  DWORD;
     typedef struct dirent Dirent;
@@ -72,7 +72,18 @@
     const DWORD FILE_ATTRIBUTE_WRIT = S_IWUSR; // has write permission
     const DWORD FILE_ATTRIBUTE_EXEC = S_IXUSR; // has execute permission
 
+#endif
 
+#ifdef HAVE_WIN
+    const char SLASH_CHAR('\\');
+    #include <assert.h>
+    #define strncasecmp _strnicmp
+    #if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
+        #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+    #endif
+#else
+    const char SLASH_CHAR('/');
+    #include <sys/fcntl.h>
 #endif
 
 class DirEntry;
@@ -96,20 +107,17 @@ public:
     const char* name() const;
 
     // Return directory path and entry name.
-    lstring& fullName(lstring& fname) const;
+    const lstring& fullName(lstring& fname) const;
 
     // Close current directory
     void close();
 
-    // Utility to join directory and name
-    static lstring& join(lstring& outPath, const char* inDir, const char* inName);
-
-    static lstring SLASH;  // "/" linux, or "\" windows
-
+    static const char SLASH_CHAR;   // '/'  linux, or '\\' windows (escaped slash)
+    static const lstring SLASH;     // "/"  linux, or "\\" windows
+    static const lstring SLASH2;    // "//" linux, or "\\\\" windows
 
 private:
     Directory_files(const Directory_files&);
-    Directory_files& operator=(const Directory_files&);
 
 #ifdef HAVE_WIN
     WIN32_FIND_DATA my_dirent;      // Data structure describes the file found
@@ -126,3 +134,34 @@ private:
 #endif
 };
 
+enum DIR_TYPES { IS_FILE, IS_DIR_BEG, IS_DIR_END };
+
+namespace DirUtil {
+ lstring& getDir(lstring& outName, const lstring& inPath);
+ lstring& getName(lstring& outName, const lstring& inPath);
+ lstring& getExt(lstring& outExt, const lstring& inPath);
+ lstring& removeExtn(lstring& outName, const lstring& inPath);
+ bool deleteFile(bool dryRun, const char* inPath);
+ bool setPermission(const char* inPath, unsigned permission, bool setAllParts = false);
+ size_t fileLength(const lstring& path);
+ bool fileExists(const char* path);bool makeWriteableFile(const char* filePath, struct stat* info);
+inline bool isWriteableFile(const struct stat& info) {
+#ifdef HAVE_WIN
+    size_t mask = _S_IFREG + _S_IWRITE;
+#else
+    size_t mask = S_IFREG + S_IWRITE;
+#endif
+    return ((info.st_mode & mask) == mask);
+}
+
+ inline unsigned int minU(unsigned int A, unsigned int B) { return (A<=B) ? A:B; }
+
+ // Utility to join directory and name and replace any double slashes with a single slash.
+inline const lstring& join(lstring& outPath, const char* inDir, const char* inName, unsigned int pathOff = 0) {
+     // return realpath(fname.c_str(), my_fullname) or   GetFullPath(fname);
+     return ReplaceAll(( outPath = lstring(inDir+pathOff) + Directory_files::SLASH + inName ), Directory_files::SLASH2, Directory_files::SLASH);
+ }
+inline const lstring& join(lstring& outPath, lstring& inDir, const char* inName) {
+     return ReplaceAll(( outPath = inDir + Directory_files::SLASH + inName ), Directory_files::SLASH2, Directory_files::SLASH);
+ }
+}
