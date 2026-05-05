@@ -59,6 +59,7 @@
 
 // 4291 - No matching operator delete found
 #pragma warning(disable : 4291)
+#define VERSION "v6.05.01"
 
 // Project files
 #include "ll_stdhdr.hpp"
@@ -292,7 +293,7 @@ static bool ValidOption(const char* validCmd, const char* possibleCmd, bool repo
 int main(int argc, char* argv[]) {
     if (argc == 1) {
         cerr << "\n"
-            << argv[0] << "  Dennis Lang v1.2 (landenlabs.com) " __DATE__
+            << argv[0] << "  Dennis Lang " VERSION " (landenlabs.com) " __DATE__
             << "\n"
             << "\nDes: Xml parse and ?? \n"
                       "Use: llxml [options] directories...   or  files\n"
