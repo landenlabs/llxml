@@ -3,7 +3,7 @@
 //  llxml
 //
 //  Created by Dennis Lang on 10/21/23.
-//  Copyright © 2023 Dennis Lang. All rights reserved.
+//  Copyright © 2026 Dennis Lang. All rights reserved.
 //
 
 #ifndef fileutil_hpp
