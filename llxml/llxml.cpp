@@ -30,7 +30,7 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-// Author: Dennis Lang - 2023
+// Author: Dennis Lang - 2026
 // https://landenlabs.com/
 //
 // This file is part of llxml project.
