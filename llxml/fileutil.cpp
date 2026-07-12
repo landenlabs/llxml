@@ -56,6 +56,14 @@ string& FileUtil::getParts(string& outParts, const char* customFmt, const string
         if (c != '%') {
             sout << c;
         } else {
+            if (*fmt == '\0') {
+                // Trailing '%' with nothing after it - emit it literally and stop,
+                // rather than advancing fmt past the format string's null terminator
+                // (which the caller-supplied -outpath= value can trigger directly,
+                // an out-of-bounds read confirmed under ASan).
+                sout << '%';
+                break;
+            }
             c = *fmt++;
             switch (c) {
             case 'n':   // name

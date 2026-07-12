@@ -327,7 +327,11 @@ int main(int argc, char* argv[]) {
         bool doParseCmds = true;
         string endCmds = "--";
         for (int argn = 1; argn < argc; argn++) {
-            if (*argv[argn] == '-' && doParseCmds) {
+            // A lone "-" is the documented "read paths from stdin" marker, not an option -
+            // it used to be caught by the generic '-'-prefix check below and reported as
+            // an unknown command, so it could never reach fileDirList for the check
+            // further down to ever see it (same bug, same fix, as lljson.cpp).
+            if (*argv[argn] == '-' && doParseCmds && strcmp(argv[argn], "-") != 0) {
                 lstring argStr(argv[argn]);
                 Split cmdValue(argStr, "=", 2);
                 if (cmdValue.size() == 2) {

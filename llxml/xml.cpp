@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------
 //
-// File: xml.cpp   Author: Dennis Lang  Desc: Get files from directories
+// File: xml.cpp   Author: Dennis Lang  Desc: Parse xml
 //
 //-------------------------------------------------------------------------------------------------
 //
@@ -80,16 +80,13 @@
 #else
 #endif
 
-#if 1
-static std::regex_constants::match_flag_type rxFlags =
-    std::regex_constants::match_flag_type(std::regex_constants::match_default +
-        std::regex_constants::extended);
-#else
-static std::regex_constants::match_flag_type rxFlags =
-    std::regex_constants::match_flag_type(std::regex_constants::match_default +
-        std::regex_constants::match_not_eol +
-        std::regex_constants::match_not_bol);
-#endif
+// regex_constants::extended is a syntax_option_type (only meaningful when
+// constructing a std::regex), not a match_flag_type. On libc++ its value (32)
+// numerically collides with match_not_null, silently suppressing any match capable
+// of matching an empty string. Harmless for the specific patterns in this file today
+// (none of them can match empty), but non-portable and not what was intended - same
+// bug found and fixed the same way in llreplace's identical rxFlags pattern.
+static std::regex_constants::match_flag_type rxFlags = std::regex_constants::match_default;
 
 #define sizeStr(x)  sizeof(x)-1
 
@@ -137,6 +134,19 @@ bool XmlBuffer::getStatement(const std::regex& xmlPatEnd, std::string& outStatem
     }
 
     return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+// Extract just the tag name from captured text like "<resources xmlns=...>\n" -> "resources",
+// or "resources>\n" (no leading '<', as used for close-tag comparisons) -> "resources".
+static string tagNameOf(const string& tagText) {
+    size_t start = (!tagText.empty() && tagText[0] == '<') ? 1 : 0;
+    size_t end = start;
+    while (end < tagText.size() && tagText[end] != ' ' && tagText[end] != '>'
+           && tagText[end] != '\t' && tagText[end] != '\r' && tagText[end] != '\n') {
+        end++;
+    }
+    return tagText.substr(start, end - start);
 }
 
 #define META_PREFIX  "_#"
@@ -234,29 +244,50 @@ bool XmlBuffer::parse(ostream& err, string filePath, bool master) {
             nextKey(row++, key);
             break;
         case '/':   // end of a block, </resources>
-            key = blockKeys.empty() ? "" : blockKeys.back();
-            if (strncmp(key.c_str() + 1, nextPtr + 2, key.length() - 1) == 0) {
-                okay = getStatement(eoxPat, statement);
-                nextKey(row++, key);
-                blockKeys.pop_back();
+            // Compare tag NAMES only, not the raw captured open-tag text - that text
+            // (from eoxPat) includes whatever whitespace/newlines happened to follow the
+            // OPEN tag, which was being compared byte-for-byte against whatever follows
+            // the CLOSE tag - two unrelated regions of the file, so this was essentially
+            // never equal for realistically formatted/indented XML. Also previously
+            // computed key.length()-1 even when blockKeys was empty (key=""), underflowing
+            // to SIZE_MAX; now skipped entirely via the empty check below.
+            if (!blockKeys.empty()) {
+                string openTagName = tagNameOf(blockKeys.back());
+                size_t closeRemain = (size_t)(data() + size() - (nextPtr + 2));
+                string closeTagName = tagNameOf(string(nextPtr + 2, nextPtr + 2 + std::min((size_t)64, closeRemain)));
+                if (openTagName == closeTagName) {
+                    okay = getStatement(eoxPat, statement);
+                    nextKey(row++, key);
+                    blockKeys.pop_back();
+                }
             }
             break;
         case 's':
             // <string name="key" opt="flags">String Value</string>
             if (strncmp("<string ", nextPtr, 8) == 0) {
+                // Check getStatement's own result before touching statement any further -
+                // it leaves statement untouched (still holding whatever a PRIOR successful
+                // call set it to) when it fails to find a closing </string>, so unconditionally
+                // running clean(statement)/printing it here used to report the wrong (stale,
+                // previous row's) content as if it were the current unterminated tag.
                 okay = getStatement(stringPatEnd, statement);
-                string test = clean(statement);
-                okay &= std::regex_search(test, match, stringPat, rxFlags);
                 if (okay) {
-                    // match[0]=whole string; match[1]=first capture group.
-                    if (match.size() >= 2) {
-                        key = match[1].str();
-                        // err << "in=" << test << " key=" << key << std::endl;
-                        isMeta = false;
+                    string test = clean(statement);
+                    okay = std::regex_search(test, match, stringPat, rxFlags);
+                    if (okay) {
+                        // match[0]=whole string; match[1]=first capture group.
+                        if (match.size() >= 2) {
+                            key = match[1].str();
+                            // err << "in=" << test << " key=" << key << std::endl;
+                            isMeta = false;
+                        }
+                    } else {
+                        err << "Error - Line: " << lineAt(pos) << " Unknown: " << test << ", In:" << filePath << std::endl;
                     }
                 } else {
-                    okay = false;
-                    err << "Error - Line: " << lineAt(pos) << " Unknown: " << clean(statement) << ", In:" << filePath << std::endl;
+                    size_t remain = (size_t)(data() + size() - nextPtr);
+                    err << "Error - Line: " << lineAt(pos) << " Unterminated <string> tag near: "
+                        << string(nextPtr, nextPtr + std::min((size_t)60, remain)) << ", In:" << filePath << std::endl;
                 }
             }
             break;
