@@ -19,17 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\llxml\directory.cpp" />
+    <ClCompile Include="..\llcommon\directory.cpp" />
     <ClCompile Include="..\llxml\fileutil.cpp" />
     <ClCompile Include="..\llxml\llxml.cpp" />
     <ClCompile Include="..\llxml\xml.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\llxml\directory.hpp" />
+    <ClInclude Include="..\llcommon\directory.hpp" />
     <ClInclude Include="..\llxml\fileutil.hpp" />
-    <ClInclude Include="..\llxml\ll_stdhdr.hpp" />
-    <ClInclude Include="..\llxml\lstring.hpp" />
-    <ClInclude Include="..\llxml\split.hpp" />
+    <ClInclude Include="..\llcommon\ll_stdhdr.hpp" />
+    <ClInclude Include="..\llcommon\lstring.hpp" />
+    <ClInclude Include="..\llcommon\split.hpp" />
     <ClInclude Include="..\llxml\xml.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
@@ -111,6 +111,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\llcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -125,6 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\llcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,6 +143,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\llcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -159,6 +162,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\llcommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
