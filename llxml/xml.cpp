@@ -244,13 +244,6 @@ bool XmlBuffer::parse(ostream& err, string filePath, bool master) {
             nextKey(row++, key);
             break;
         case '/':   // end of a block, </resources>
-            // Compare tag NAMES only, not the raw captured open-tag text - that text
-            // (from eoxPat) includes whatever whitespace/newlines happened to follow the
-            // OPEN tag, which was being compared byte-for-byte against whatever follows
-            // the CLOSE tag - two unrelated regions of the file, so this was essentially
-            // never equal for realistically formatted/indented XML. Also previously
-            // computed key.length()-1 even when blockKeys was empty (key=""), underflowing
-            // to SIZE_MAX; now skipped entirely via the empty check below.
             if (!blockKeys.empty()) {
                 string openTagName = tagNameOf(blockKeys.back());
                 size_t closeRemain = (size_t)(data() + size() - (nextPtr + 2));
@@ -265,11 +258,6 @@ bool XmlBuffer::parse(ostream& err, string filePath, bool master) {
         case 's':
             // <string name="key" opt="flags">String Value</string>
             if (strncmp("<string ", nextPtr, 8) == 0) {
-                // Check getStatement's own result before touching statement any further -
-                // it leaves statement untouched (still holding whatever a PRIOR successful
-                // call set it to) when it fails to find a closing </string>, so unconditionally
-                // running clean(statement)/printing it here used to report the wrong (stale,
-                // previous row's) content as if it were the current unterminated tag.
                 okay = getStatement(stringPatEnd, statement);
                 if (okay) {
                     string test = clean(statement);
