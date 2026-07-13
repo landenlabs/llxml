@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Dennis Lang
+//
 //-------------------------------------------------------------------------------------------------
 //
 // File: xml.cpp   Author: Dennis Lang  Desc: Parse xml
