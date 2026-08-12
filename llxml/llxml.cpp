@@ -292,39 +292,44 @@ static bool ValidOption(const char* validCmd, const char* possibleCmd, bool repo
 }
 
 // -------------------------------------------------------------------------------------------------
+void showHelp(const char* argv0) {
+    cerr << "\n"
+        << argv0 << "  Dennis Lang " VERSION " (landenlabs.com) " __DATE__
+        << "\n"
+        << "\nDes: Xml parse and ?? \n"
+                  "Use: llxml [options] directories...   or  files\n"
+                  "\n"
+                  " Options (only unique characters required, can be repeated, case ignored):\n"
+                  "   -fileInclude=<filePattern>\n"
+                  "   -fileExclude=<filePattern>\n"
+                  "   -pathInclude=<pathPattern>\n"
+                  "   -pathExclude=<pathPattern>\n"
+                  "   -showInput\n"
+                  "   -verbose\n"
+                  "   -outFmt=%p-AA/%f \n"
+                  "\n"
+                  " Example:\n"
+                  "   llxml -inc=\\*xml -excludePath=\\*value-\\* \n"
+                  "   llxml main1.xml dir2/main2.xml , child1.xml child2.xml \n"
+                  "\n"
+                  " Example input xml:\n"
+                  "    <?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                  "    <!-- comment-->\n"
+                  "    <resources>\n"
+                  "        <string name=\"language\" translatable=\"false\">English</string>\n"
+                  "        <!-- comment -->\n"
+                  "        <string name=\"word1\">Your Drive</string>\n"
+                  "        <string name=\"word2\">Radar</string>\n"
+                  "    </resources>\n"
+                  "\n"
+                  "   Output:\n"
+                  "\n";
+}
+
+// -------------------------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
     if (argc == 1) {
-        cerr << "\n"
-            << argv[0] << "  Dennis Lang " VERSION " (landenlabs.com) " __DATE__
-            << "\n"
-            << "\nDes: Xml parse and ?? \n"
-                      "Use: llxml [options] directories...   or  files\n"
-                      "\n"
-                      " Options (only unique characters required, can be repeated, case ignored):\n"
-                      "   -fileInclude=<filePattern>\n"
-                      "   -fileExclude=<filePattern>\n"
-                      "   -pathInclude=<pathPattern>\n"
-                      "   -pathExclude=<pathPattern>\n"
-                      "   -showInput\n"
-                      "   -verbose\n"
-                      "   -outFmt=%p-AA/%f \n"
-                      "\n"
-                      " Example:\n"
-                      "   llxml -inc=\\*xml -excludePath=\\*value-\\* \n"
-                      "   llxml main1.xml dir2/main2.xml , child1.xml child2.xml \n"
-                      "\n"
-                      " Example input xml:\n"
-                      "    <?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                      "    <!-- comment-->\n"
-                      "    <resources>\n"
-                      "        <string name=\"language\" translatable=\"false\">English</string>\n"
-                      "        <!-- comment -->\n"
-                      "        <string name=\"word1\">Your Drive</string>\n"
-                      "        <string name=\"word2\">Radar</string>\n"
-                      "    </resources>\n"
-                      "\n"
-                      "   Output:\n"
-                      "\n";
+        showHelp(argv[0]);
     } else {
         bool doParseCmds = true;
         string endCmds = "--";
@@ -371,13 +376,25 @@ int main(int argc, char* argv[]) {
                         break;
                     }
                 } else {
-                    switch (argStr[(unsigned)1]) {
+                    const char* cmdName = argStr + 1;
+                    if (argStr.length() > 2 && *cmdName == '-')
+                        cmdName++;  // allow -- prefix on commands
+                    switch (*cmdName) {
                     case 's':  // -show info about parsed files
                         showInfo = true;
                         continue;
                     case 'v':  // -v=true or -v=anyThing
                         verbose = true;
                         continue;
+                    case '?':
+                        showHelp(argv[0]);
+                        return 0;
+                    case 'h':
+                        if (ValidOption("help", cmdName)) {
+                            showHelp(argv[0]);
+                            return 0;
+                        }
+                        break;
                     }
 
                     if (endCmds == argv[argn]) {
